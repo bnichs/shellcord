@@ -3,7 +3,10 @@
 #script --return -T timing.txt foo.log
 
 
-LOG_FILE=./cmds.log
+SCORD_LOG_FILE=./cmds.log
+export SCORD_LOG_FILE
+
+DELIM="@%@%"
 
 
 shuid(){
@@ -12,26 +15,54 @@ shuid(){
 }
 
 
-good_history(){
-  scord_id=$1
-  exit_status=$2
-  cmd=$(history -1 | awk '{print $1}')
+get_last_command(){
+#  echo foo
+  if [ -n "$ZSH_VERSION" ]; then
+    history -1 | awk '{$1=""; print $0}'
+  elif [ -n "$BASH_VERSION" ]; then
+    history 2 | sed '2q;d' | awk '{$1=""; print $0}'
+  else
+    echo "Unsupported shell"
+  fi
+}
 
-  echo "$cmd: $scord_id: $exit_status" >> $LOG_FILE
+#typeset -fx get_last_command
 
-#  echo "yay, exit: $exit_status" >> $LOG_FILE
-#  if ((!exit_status)); then
-#     history 1 >> history.txt
-#  fi
+
+before_cmd(){
+    # We use this in a bash context, but in zsh its passed in
+    in_exit_status=$?
+    if [ $# -eq 0 ]; then
+      exit_status="$in_exit_status"
+    else
+      exit_status="$1"
+    fi
+
+
+    save_history "$SCORD_ID" "$exit_status"
+
+    # make a new id for the next command
+    SCORD_CMD=$(shuid)
+    export SCORD_ID="scord-$SCORD_SESSION-$SCORD_CMD"
 }
 
 
-export OLD_PROMPT_COMMAND="$PROMPT_COMMAND"
+save_history(){
+  scord_id=$1
+  exit_status=$2
+  cmd=$(get_last_command)
 
-export PROMPT_COMMAND="good_history ${PROMPT_COMMAND}"
+  echo "$cmd$DELIM$scord_id$DELIM$exit_status" >> $SCORD_LOG_FILE
+}
 
 
-init_scord(){
+init_scord_bash(){
+  export OLD_PROMPT_COMMAND="$PROMPT_COMMAND"
+  export PROMPT_COMMAND="before_cmd; ${PROMPT_COMMAND}"
+}
+
+
+init_scord_zsh(){
   eval orig_"$(declare -f precmd)"
   export orig_precmd
 
@@ -40,16 +71,21 @@ init_scord(){
     # Get the last commands exit
     exit_status=$?
 
-    good_history "$SCORD_ID" "$exit_status"
-
-    # make a new id for the next command
-    SCORD_CMD=$(shuid)
-    export SCORD_ID="scord-$SCORD_SESSION-$SCORD_CMD"
+    before_cmd "$exit_status"
 
     orig_precmd
-#    echo "$SCORD_ID"
   }
-#  export precmd
+}
+
+
+init_poly(){
+  if [ -n "$ZSH_VERSION" ]; then
+     init_scord_zsh
+  elif [ -n "$BASH_VERSION" ]; then
+     init_scord_bash
+  else
+    echo "Unsupported shell"
+  fi
 }
 
 
@@ -64,8 +100,8 @@ if [ -z ${SCORD_INIT+x} ]; then
   SCORD_CMD="$(shuid)"
   export SCORD_CMD
 
-#  script
-  init_scord
+  init_poly
+
 else
   echo "Shellcord is already setup, not initializing"
 fi

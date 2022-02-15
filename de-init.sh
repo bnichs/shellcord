@@ -1,7 +1,5 @@
 
 
-
-
 deinit_zsh(){
   # Replace the temp function name with the original: precmd
   new_pre_cmd_text=$(declare -f orig_precmd | sed  "1s/orig_//")
@@ -35,12 +33,9 @@ save_log(){
 
 if [ -z ${SCORD_INIT+x} ]; then
   echo "Shellcord is not setup, nothing to de-init";
-#  export SCORD_INIT=1
 else
   echo "Shutting down shellcord..."
   deinit_poly
-#  exit # Exit the script session
-
   save_log
 fi
 

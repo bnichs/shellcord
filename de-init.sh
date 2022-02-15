@@ -16,10 +16,16 @@ if [ -z ${SCORD_INIT+x} ]; then
 else
   echo "Shutting down shellcord..."
   unset SCORD_INIT
+  unset SCORD_CMD
+  unset SCORD_SESSION
   deinit
+#  exit # Exit the script session
 fi
 
 
+unset SCORD_INIT
+unset SCORD_CMD
+unset SCORD_SESSION
 
 #trap - DEBUG
 #

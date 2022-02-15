@@ -1,7 +1,4 @@
 
-#trap 'x=$?; echo "exit: $x" >> ./foo.log' DEBUG
-#script --return -T timing.txt foo.log
-
 
 SCORD_LOG_FILE=./cmds.log
 export SCORD_LOG_FILE
@@ -25,8 +22,6 @@ get_last_command(){
     echo "Unsupported shell"
   fi
 }
-
-#typeset -fx get_last_command
 
 
 before_cmd(){
@@ -105,6 +100,3 @@ if [ -z ${SCORD_INIT+x} ]; then
 else
   echo "Shellcord is already setup, not initializing"
 fi
-
-
-#trap "echo Hello" DEBUG

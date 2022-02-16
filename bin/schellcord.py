@@ -8,14 +8,15 @@ from dataclasses import dataclass, asdict
 from json import JSONDecodeError
 from pathlib import Path
 from pprint import pprint
-from typing import List, Dict
+from typing import List, Dict, Union
 
 import click
 import json
 
 TRIPLE_TICKS = "```"
 
-SCORD_LOG_REGEX = "scord-log-\w+.json"
+SCORD_LOG_REGEX = r"scord-log-\w+.json"
+SCORD_ID_REGEX = r"scord-(\w+)-(\w+)"
 
 
 DEFAULT_OUT_FILE = "scord-out.md"
@@ -64,13 +65,32 @@ class ScordEl(object):
 
 
 @dataclass
+class ScordID(object):
+    session_id: str
+    cmd_id: str = None
+
+    @classmethod
+    def from_str(cls, sid: Union[str, "ScordID"]) -> "ScordID":
+        if isinstance(sid, ScordID):
+            return sid
+
+        m = re.match(SCORD_ID_REGEX, sid)
+        session_id, cmd_id = m.groups()
+        return ScordID(session_id, cmd_id)
+
+    def __hash__(self):
+        return hash((self.session_id, self.cmd_id))
+
+
+@dataclass
 class Command(ScordEl):
     cmd: str
-    scord_id: str
+    scord_id: ScordID
     exit_code: int
 
     def __post_init__(self):
         self.exit_code = int(self.exit_code)
+        self.scord_id = ScordID.from_str(self.scord_id)
 
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -125,7 +145,40 @@ class DefaultRunbookOptions(RunbookOptions):
 class ScordLog(object):
     """Wrap cmds.log"""
     cmds: List[Command]  # All the commadns run
-    tags: Dict[str, Tag]  # scord_id -> Tag
+    tags: Dict[ScordID, Tag]  # scord_id -> Tag
+
+    def __post_init__(self):
+        self.clean_commands()
+
+    def clean_commands(self):
+        """
+        Our shell wrappers will include the first command run which is us invoking shellcord (source init.sh)
+
+        Ensure the first session command's ID doesn't match the others then remove it
+        """
+        first, second, *_ = self.cmds
+
+        if first.scord_id.session_id == second.scord_id.session_id:
+            logger.warning("Found the first command's session to match the second's. We expect the first command to not be a part of this session")
+        else:
+            logger.debug("Removing the first command as its from a previous session")
+            self.cmds = self.cmds[1:]
+
+    @property
+    def session_id(self):
+        session_ids = {s.scord_id.session_id for s in self.cmds}
+        if len(session_ids) > 1:
+            raise ValueError("Found multiple session ids in the same log")
+        elif len(session_ids) == 0:
+            raise ValueError("Found no session ids")
+        else:
+            return session_ids.pop()
+
+    def out_fname(self):
+        """The fname for the outputted markdown file"""
+        print(self.session_id)
+
+        return f"scord-runbook-{self.session_id}.md"
 
     @classmethod
     def fix_json(cls, jtext):

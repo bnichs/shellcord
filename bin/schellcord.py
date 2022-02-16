@@ -237,7 +237,7 @@ def find_file():
             fils.append((fil, create_time))
 
     if not fils:
-        raise
+        raise ValueError("Found no scord log files. Has shellcord ever run?")
 
     fils = sorted(fils, key=lambda x: x[1], reverse=True)
     fil, _ = fils[0]

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import csv
 from dataclasses import dataclass
+import logging
 from pprint import pprint
 from typing import List
 
@@ -8,6 +9,13 @@ import click
 import json
 
 TRIPLE_TICKS = "```"
+
+
+logger = logging.getLogger()
+logging.basicConfig()
+logger.setLevel(logging.DEBUG)
+
+
 
 
 @dataclass
@@ -52,6 +60,7 @@ class RunbookGenerator(object):
         with open(fname, 'w') as f:
             f.write(txt)
 
+        logger.info("Wrote runbook to %s", fname)
 
 def parse_file(file):
     reader = csv.reader(file, delimiter='█', quotechar='"')

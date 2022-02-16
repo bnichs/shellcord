@@ -28,13 +28,13 @@ before_cmd(){
     # We use this in a bash context, but in zsh its passed in
     in_exit_status=$?
     if [ $# -eq 0 ]; then
-      exit_status="$in_exit_status"
+      exit_code="$in_exit_status"
     else
-      exit_status="$1"
+      exit_code="$1"
     fi
 
 
-    save_history "$SCORD_ID" "$exit_status"
+    save_history "$SCORD_ID" "$exit_code"
 
     # make a new id for the next command
     SCORD_CMD=$(shuid)
@@ -62,7 +62,7 @@ json_str(){
 
 save_history(){
   scord_id=$1
-  exit_status=$2
+  exit_code=$2
   cmd=$(get_last_command)
 
   j_str=$(json_str "$cmd" "$scord_id" "$exit_code")
@@ -85,9 +85,9 @@ init_scord_zsh(){
 
   precmd(){
     # Get the last commands exit
-    exit_status=$?
+    exit_code=$?
 
-    before_cmd "$exit_status"
+    before_cmd "$exit_code"
 
     orig_precmd
   }

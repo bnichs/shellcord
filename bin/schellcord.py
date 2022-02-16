@@ -212,12 +212,10 @@ class ScordLog(object):
 
     @classmethod
     def from_dict(cls, full_d: dict) -> "ScordLog":
-        logger.debug("Building a full log from dict")
+        logger.debug("Building a full ScordLog from dict with %d elements in it", len(full_d))
         els = []
         for d in full_d:
-            # print(d)
             el = ScordEl.from_dict(d)
-            # print(el)
             els.append(el)
 
         return cls.from_els(els)

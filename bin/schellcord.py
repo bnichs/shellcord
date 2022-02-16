@@ -1,6 +1,8 @@
 #!/usr/bin/env python
-from dataclasses import dataclass
 import logging
+from abc import abstractmethod
+from copy import deepcopy
+from dataclasses import dataclass, asdict
 from json import JSONDecodeError
 from pprint import pprint
 from typing import List
@@ -18,22 +20,64 @@ logging.basicConfig()
 logger.setLevel(logging.DEBUG)
 
 
+class ScordEl(object):
+    """General representation for a json string in an scord log"""
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "ScordEl":
+        if "type" not in d:
+            raise ValueError("Found not type in json string")
+
+        typ = d['type']
+        logger.debug("Building el for type=%s", typ)
+
+        if typ == "cmd":
+            return Command.from_dict(d)
+        elif typ == "tag":
+            return Tag.from_dict(d)
+        else:
+            raise ValueError("Unknown element type=%s", typ)
+
+    @abstractmethod
+    def to_dict(self):
+        pass
+
+    def dump(self, fname=None):
+        """
+        Dump this tag to the given scord log file
+        :return:
+        """
+        fname = fname or os.environ.get("SCORD_LOG_FILE", None)
+
+        if not fname:
+            raise
+
+        with open(fname, 'a') as f:
+            jtxt = json.dumps(self.to_dict(), indent=4) + "\n"
+            f.write(jtxt)
 
 
 @dataclass
-class Command(object):
+class Command(ScordEl):
     cmd: str
     scord_id: str
     exit_code: int
 
+    def __post_init__(self):
+        self.exit_code = int(self.exit_code)
+
+    def to_dict(self) -> dict:
+        d = asdict(self)
+        d['type'] = 'cmd'
+        return d
+
     @classmethod
-    def from_array(cls, arr: List[str]):
-        cmd, scord_id, exit_str = arr
+    def from_dict(cls, d: dict) -> "Command":
+        d = deepcopy(d)
+        del d['type']
 
-        exit_code = int(exit_str)
-        cmd = Command(cmd, scord_id, exit_code)
+        return Command(**d)
 
-        return cmd
 
 
 @dataclass

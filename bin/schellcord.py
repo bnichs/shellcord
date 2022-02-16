@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 import logging
+import os
+import re
 from abc import abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass, asdict
 from json import JSONDecodeError
+from pathlib import Path
 from pprint import pprint
 from typing import List, Dict
 
@@ -192,22 +195,23 @@ def cli():
     pass
 
 
+def find_file():
+    """Try and find a file that looks like an scord log"""
+    fils = []
+    for fil in os.listdir(os.getcwd()):
+        if re.match(SCORD_LOG_REGEX, fil):
+            logger.debug("File %s matches", fil)
+            fil = Path(fil)
+            create_time = fil.stat().st_ctime
+            fils.append((fil, create_time))
 
-# @click.group("cli")
-# @click.pass_context
-@click.command()
-# @click.argument("file")
-@click.argument('file', type=click.File('r'))
-def cli(file):
-    """An example CLI for interfacing with a document"""
+    if not fils:
+        raise
 
-    cmds = parse_file(file)
-
-    gen = RunbookGenerator(cmds)
-    pprint(cmds)
-
-    print(gen)
-    gen.make_markdown("out.md")
+    fils = sorted(fils, key=lambda x: x[1], reverse=True)
+    fil, _ = fils[0]
+    logger.debug("Found %d files that match, taking the newest one, %s", len(fils), fil)
+    return str(fil.absolute())
 
 
 @cli.command()

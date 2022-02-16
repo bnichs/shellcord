@@ -41,13 +41,34 @@ before_cmd(){
     export SCORD_ID="scord-$SCORD_SESSION-$SCORD_CMD"
 }
 
+json_str(){
+  cmd=$1
+  scord_id=$2
+  exit_code=$3
+
+  # This is to get around needing a jq dependency. Will keep until there are enough problems with escaping
+#  JSON_FMT='{"type": "cmd", "cmd": "%q", "scord_id": "%s", "exit_status": "%s"}'
+#  printf "${JSON_FMT}" "$cmd" "$scord_id" "$exit_status"
+
+  JSON_STRING=$( jq -n \
+                  --arg typ "cmd" \
+                  --arg cmd "$cmd" \
+                  --arg sid "$scord_id" \
+                  --arg rt "$exit_code" \
+                  '{type: $typ, cmd: $cmd, scord_id: $sid, exit_code: $rt}' )
+  echo "$JSON_STRING"
+}
+
 
 save_history(){
   scord_id=$1
   exit_status=$2
   cmd=$(get_last_command)
 
-  echo "$cmd$DELIM$scord_id$DELIM$exit_status" >> $SCORD_LOG_FILE
+  j_str=$(json_str "$cmd" "$scord_id" "$exit_code")
+
+  echo "$j_str" >> $SCORD_LOG_FILE
+
 }
 
 

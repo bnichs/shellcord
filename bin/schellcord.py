@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-import csv
 from dataclasses import dataclass
 import logging
+from json import JSONDecodeError
 from pprint import pprint
 from typing import List
 
@@ -9,6 +9,8 @@ import click
 import json
 
 TRIPLE_TICKS = "```"
+
+SCORD_LOG_REGEX = "scord-\w+.json"
 
 
 logger = logging.getLogger()
@@ -62,12 +64,6 @@ class RunbookGenerator(object):
 
         logger.info("Wrote runbook to %s", fname)
 
-def parse_file(file):
-    reader = csv.reader(file, delimiter='█', quotechar='"')
-    cmds = []
-    for row in reader:
-        cmd = Command.from_array(row)
-        cmds.append(cmd)
 
     return cmds
 

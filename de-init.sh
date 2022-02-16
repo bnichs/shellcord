@@ -24,7 +24,7 @@ deinit_poly(){
 
 
 save_log(){
-  log_loc="scord-$SCORD_SESSION.json"
+  log_loc="scord-log-$SCORD_SESSION.json"
   echo "Saving log file to $log_loc"
 
   mv "$SCORD_LOG_FILE" "$log_loc"

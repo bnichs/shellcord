@@ -1,6 +1,6 @@
 
 
-SCORD_LOG_FILE=./cmds.log
+SCORD_LOG_FILE=./scord-cmds.log
 export SCORD_LOG_FILE
 
 DELIM="█"

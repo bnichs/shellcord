@@ -15,10 +15,10 @@ import json
 
 TRIPLE_TICKS = "```"
 
-SCORD_LOG_REGEX = "scord-\w+.json"
+SCORD_LOG_REGEX = "scord-log-\w+.json"
 
 
-DEFAULT_OUT_FILE = "out.md"
+DEFAULT_OUT_FILE = "scord-out.md"
 
 
 logger = logging.getLogger()

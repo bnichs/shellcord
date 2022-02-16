@@ -85,11 +85,12 @@ init_poly(){
 
 
 if [ -z ${SCORD_INIT+x} ]; then
-  echo "Setting up shellcord";
   export SCORD_INIT=1
 
   SCORD_SESSION="$(shuid)"
   export SCORD_SESSION
+
+  echo "Setting up shellcord session=$SCORD_SESSION";
 
   # Make the ids for the next command run
   SCORD_CMD="$(shuid)"

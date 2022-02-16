@@ -5,7 +5,7 @@ from copy import deepcopy
 from dataclasses import dataclass, asdict
 from json import JSONDecodeError
 from pprint import pprint
-from typing import List
+from typing import List, Dict
 
 import click
 import json
@@ -89,8 +89,71 @@ class RunbookOptions(object):
 
 
 @dataclass
+class ScordLog(object):
+    """Wrap cmds.log"""
+    cmds: List[Command]  # All the commadns run
+    tags: Dict[str, Tag]  # scord_id -> Tag
+
+    @classmethod
+    def fix_json(cls, jtext):
+        """
+        Add surrounding [ ... ] and commas to a list of json strings
+        :param jtext:
+        :return:
+        """
+        logger.debug("Fixing badly formatted json")
+
+        jtext = jtext.replace("}\n{", "},\n{")
+        jtext = f"[\n{jtext}\n]"
+
+        return jtext
+
+    @classmethod
+    def from_els(cls, els: List[ScordEl]) -> "ScordLog":
+        pprint(els)
+        cmds = []
+        tags = {}
+
+        for el in els:
+            if isinstance(el, Command):
+                cmds.append(el)
+            elif isinstance(el, Tag):
+                tags[el.scord_id] = el
+            else:
+                raise ValueError
+
+        return ScordLog(cmds, tags)
+
+    @classmethod
+    def from_dict(cls, full_d: dict) -> "ScordLog":
+        logger.debug("Building a full log from dict")
+        els = []
+        for d in full_d:
+            # print(d)
+            el = ScordEl.from_dict(d)
+            # print(el)
+            els.append(el)
+
+        return cls.from_els(els)
+
+    @classmethod
+    def parse_file(cls, file: str) -> "ScordLog":
+        logger.debug("Building a full log from json")
+        with open(file) as f:
+            jtext = f.read()
+
+            try:
+                j = json.loads(jtext, strict=False)
+            except JSONDecodeError as e:
+                jtext = cls.fix_json(jtext)
+                j = json.loads(jtext, strict=False)
+
+        return cls.from_dict(j)
+
+
+@dataclass
 class RunbookGenerator(object):
-    cmds: List[Command]
+    scord_log: ScordLog
     opts: RunbookOptions = None
 
     def code_part(self, s: str):
@@ -109,7 +172,7 @@ class RunbookGenerator(object):
         logger.info("Wrote runbook to %s", fname)
 
 
-    return cmds
+
 
 
 # @click.group("cli")

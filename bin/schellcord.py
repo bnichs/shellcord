@@ -180,6 +180,10 @@ class ScordLog(object):
 
         return f"scord-runbook-{self.session_id}.md"
 
+        for cmd in self.cmds:
+            print(cmd.scord_id)
+        raise
+
     @classmethod
     def fix_json(cls, jtext):
         """
@@ -306,7 +310,7 @@ def generate(file, out_file):
 
     gen = RunbookGenerator(scord_log)
 
-    out_file = out_file or DEFAULT_OUT_FILE
+    out_file = out_file or scord_log.out_fname()
     gen.make_markdown(out_file)
 
 

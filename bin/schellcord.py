@@ -15,6 +15,9 @@ TRIPLE_TICKS = "```"
 SCORD_LOG_REGEX = "scord-\w+.json"
 
 
+DEFAULT_OUT_FILE = "out.md"
+
+
 logger = logging.getLogger()
 logging.basicConfig()
 logger.setLevel(logging.DEBUG)
@@ -183,6 +186,10 @@ class RunbookGenerator(object):
         logger.info("Wrote runbook to %s", fname)
 
 
+@click.group("cli")
+def cli():
+    """Root cli"""
+    pass
 
 
 
@@ -203,10 +210,20 @@ def cli(file):
     gen.make_markdown("out.md")
 
 
-    # _stream = open(document)
-    # _dict = json.load(_stream)
-    # _stream.close()
-    # ctx.obj = _dict
+@cli.command()
+@click.option('--file', type=click.File('r'), default=None, help="The scord log file. If unset will search PWD for the most recent option")
+@click.option('--out-file', type=click.File('w'), default=None, help="Where to write the runbook file")
+def generate(file, out_file):
+    if not file:
+        file = find_file()
+    scord_log = ScordLog.parse_file(file)
+
+    gen = RunbookGenerator(scord_log)
+
+    out_file = out_file or DEFAULT_OUT_FILE
+    gen.make_markdown(out_file)
+
+
 
 
 def main():

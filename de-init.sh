@@ -45,3 +45,4 @@ fi
 unset SCORD_INIT
 unset SCORD_CMD
 unset SCORD_SESSION
+unset LAST_SCORD_ID

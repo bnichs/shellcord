@@ -85,6 +85,22 @@ class Command(ScordEl):
         return Command(**d)
 
 
+@dataclass
+class Tag(ScordEl):
+    scord_id: str
+    tag_str: str
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "Tag":
+        d = deepcopy(d)
+        del d['type']
+        return Tag(**d)
+
+    def to_dict(self):
+        d = asdict(self)
+        d['type'] = 'tag'
+        return d
+
 
 @dataclass
 class RunbookOptions(object):
@@ -176,12 +192,27 @@ class RunbookGenerator(object):
     def code_part(self, s: str):
         return f"{TRIPLE_TICKS}bash\n{s}\n{TRIPLE_TICKS}"
 
+    def make_command(self, command: Command, cmd_num: int):
+        txt = ""
+
+        if command.scord_id in self.scord_log.tags:
+            tag = self.scord_log.tags[command.scord_id]
+            txt += f"### {tag.tag_str}"
+        else:
+            d = cmd_num
+            txt += f'### Command #{d}'
+        txt += "\n"
+        txt += self.code_part(command.cmd)
+        return txt
+
     def make_markdown(self, fname: str):
         txt = ""
 
-        for command in self.cmds:
-            txt += self.code_part(command.cmd)
-            txt += "\n"
+        for cmd_num, command in enumerate(self.scord_log.cmds):
+            if not self.opts.include_command(command):
+                logger.debug("Skipping command %s", command)
+            txt += self.make_command(command, cmd_num=cmd_num)
+            txt += "\n\n"
 
         with open(fname, 'w') as f:
             f.write(txt)
@@ -228,6 +259,40 @@ def generate(file, out_file):
     gen.make_markdown(out_file)
 
 
+@cli.group()
+def tag():
+    pass
+
+
+@tag.command("next")
+@click.argument('tag_str', type=str)
+def tag_next(tag_str):
+    """
+    Tag the next command run with this string
+    """
+    # Idk how to do this one yet.
+    raise
+    # scord_cmd = os.environ['SCORD_CMD']
+    # logger.debug("Tagging next command %s with %s", scord_cmd, tag_str)
+    # print(tag_str)
+
+
+@tag.command("previous")
+@click.argument('tag_str', type=str)
+def tag_previous(tag_str):
+    """
+    Tag the last command run with this string
+    """
+    if 'LAST_SCORD_ID' not in os.environ:
+        raise ValueError("Can't find the last command, is shellcord initialized?")
+    scord_id = os.environ['LAST_SCORD_ID']
+    logger.debug("Tagging previous command %s with %s", scord_id, tag_str)
+
+    t = Tag(scord_id=scord_id,
+            tag_str=tag_str)
+
+    logger.debug("Saving tag value %s", t)
+    t.dump()
 
 
 def main():

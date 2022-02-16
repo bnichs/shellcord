@@ -36,6 +36,9 @@ before_cmd(){
 
     save_history "$SCORD_ID" "$exit_code"
 
+    LAST_SCORD_ID="$SCORD_ID"
+    export LAST_SCORD_ID
+
     # make a new id for the next command
     SCORD_CMD=$(shuid)
     export SCORD_ID="scord-$SCORD_SESSION-$SCORD_CMD"

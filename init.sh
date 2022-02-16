@@ -3,7 +3,7 @@
 SCORD_LOG_FILE=./cmds.log
 export SCORD_LOG_FILE
 
-DELIM="@%@%"
+DELIM="█"
 
 
 shuid(){

@@ -87,6 +87,17 @@ class RunbookOptions(object):
     def __post_init__(self):
         self.allow_exit_codes = self.allow_exit_codes or [0]
 
+    def include_command(self, command: Command):
+        if command.exit_code not in self.allow_exit_codes:
+            return False
+
+        return True
+
+
+class DefaultRunbookOptions(RunbookOptions):
+    pass
+
+
 
 @dataclass
 class ScordLog(object):
@@ -154,7 +165,7 @@ class ScordLog(object):
 @dataclass
 class RunbookGenerator(object):
     scord_log: ScordLog
-    opts: RunbookOptions = None
+    opts: RunbookOptions = DefaultRunbookOptions()
 
     def code_part(self, s: str):
         return f"{TRIPLE_TICKS}bash\n{s}\n{TRIPLE_TICKS}"

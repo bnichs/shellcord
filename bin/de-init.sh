@@ -25,9 +25,15 @@ deinit_poly(){
 
 save_log(){
   log_loc="scord-log-$SCORD_SESSION.json"
-  echo "Saving log file to $log_loc"
 
   mv "$SCORD_LOG_FILE" "$log_loc"
+  echo "$log_loc"
+}
+
+generate(){
+  fname=$1
+
+  bin/shellcord.py generate --file $fname
 }
 
 
@@ -36,7 +42,11 @@ if [ -z ${SCORD_INIT+x} ]; then
 else
   echo "Shutting down shellcord..."
   deinit_poly
-  save_log
+  fname=$(save_log)
+
+  echo "Saved log file to $fname"
+
+  generate "$fname"
 fi
 
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import logging
 import os
 import re
@@ -331,7 +331,7 @@ def find_file():
 
 
 @cli.command()
-@click.option('--file', type=click.File('r'), default=None, help="The scord log file. If unset will search PWD for the most recent option")
+@click.option('--file', type=str, default=None, help="The scord log file. If unset will search PWD for the most recent option")
 @click.option('--out-file', type=click.File('w'), default=None, help="Where to write the runbook file")
 def generate(file, out_file):
     if not file:

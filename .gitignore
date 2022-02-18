@@ -3,3 +3,6 @@
 var/
 __pycache__
 .coverage
+scord-*.md
+scord-*.json
+*.pyc

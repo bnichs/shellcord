@@ -4,6 +4,32 @@ version = "0.1.0"
 description = "Easily create runbooks from your shell commands"
 authors = ["Ben <bnichs55@gmail.com>"]
 license = "MIT"
+readme = "README.md"
+repository = "https://github.com/bnichs/shellcord.git"
+keywords = [
+    "runbook",
+    "shell",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Environment :: Console",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: System :: Shells"
+]
+include = [
+    "LICENSE",
+]
+
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+tagged-metadata = true
+metadata = false
+bump = false
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -17,7 +43,7 @@ pytest-cov = "^3.0.0"
 shellcord = "shellcord.cli:cli"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
 build-backend = "poetry.core.masonry.api"
 
 

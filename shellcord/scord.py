@@ -69,6 +69,9 @@ class ScordID(object):
     def __hash__(self):
         return hash((self.session_id, self.cmd_id))
 
+    def __str__(self):
+        return f"scord-{self.session_id}-{self.cmd_id}"
+
 
 @dataclass
 class Command(ScordEl):
@@ -83,6 +86,7 @@ class Command(ScordEl):
     def to_dict(self) -> dict:
         d = asdict(self)
         d['type'] = 'cmd'
+        d['scord_id'] = str(self.scord_id)
         return d
 
     @classmethod

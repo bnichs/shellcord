@@ -51,7 +51,8 @@ jobs:
       - name: Publish
         run: |
           poetry publish --build -vvv
-          echo "SCORD_VERSION=$(poetry version | awk '{print $2}')"
+          echo "SCORD_VERSION=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
+      #          echo "SCORD_VERSION=$(poetry version | awk '{print $2}')"
 #          poetry publish -r testpypi --build -vvv
 
       - name: Build dockerfile to test install

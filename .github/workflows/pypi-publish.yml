@@ -56,6 +56,10 @@ jobs:
       #          echo "SCORD_VERSION=$(poetry version | awk '{print $2}')"
 #          poetry publish -r testpypi --build -vvv
 
+  test-publish:
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
       - name: Build dockerfile to test install
         uses: docker/build-push-action@v2
         with:

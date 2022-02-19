@@ -7,10 +7,10 @@ on:
       - completed
   release:
     types: [published]
-#  push:
-#    branches: [ master ]
-#    tags:
-#      - "v*.*"
+  push:
+    branches: [ master ]
+    tags:
+      - "v*.*"
 
 
 jobs:

@@ -21,7 +21,7 @@ class ScordEl(object):
     @classmethod
     def from_dict(cls, d: dict) -> "ScordEl":
         if "type" not in d:
-            raise ValueError("Found not type in json string")
+            raise ValueError("Found no type in json string")
 
         typ = d['type']
         logger.debug("Building el for type=%s", typ)
@@ -145,13 +145,7 @@ class ScordLog(object):
 
     def out_fname(self):
         """The fname for the outputted markdown file"""
-        print(self.session_id)
-
         return f"scord-runbook-{self.session_id}.md"
-
-        for cmd in self.cmds:
-            print(cmd.scord_id)
-        raise
 
     @classmethod
     def fix_json(cls, jtext):
@@ -169,7 +163,6 @@ class ScordLog(object):
 
     @classmethod
     def from_els(cls, els: List[ScordEl]) -> "ScordLog":
-        pprint(els)
         cmds = []
         tags = {}
 
@@ -196,6 +189,7 @@ class ScordLog(object):
     @classmethod
     def parse_file(cls, file: str) -> "ScordLog":
         logger.debug("Building a full log from json")
+
         with open(file) as f:
             jtext = f.read()
 

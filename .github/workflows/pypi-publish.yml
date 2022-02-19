@@ -59,3 +59,5 @@ jobs:
           file: tests/Dockerfile
           context: .
           push: false
+          build-args: |
+            SCORD_VERSION=0.2.0.post1.dev0

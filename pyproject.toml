@@ -28,5 +28,7 @@ log_level = "DEBUG"
 # https://github.com/pallets/click/issues/824
 #log_cli = true
 
+log_file = "var/test.log"
+
 testpaths = [
 ]

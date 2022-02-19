@@ -13,10 +13,12 @@ pytest-cov = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 
+[tool.poetry.scripts]
+shellcord = "shellcord.cli:cli"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
 
 
 [tool.pytest.ini_options]

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "shellcord"
-version = "0.1.0"
+version = "0.0.0"
 description = "Easily create runbooks from your shell commands"
 authors = ["Ben <bnichs55@gmail.com>"]
 license = "MIT"

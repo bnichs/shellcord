@@ -1,0 +1,54 @@
+name: Publish Python package
+on:
+  workflow_run:
+    workflows: [ "Py-Build" ]
+    branches: [ master ]
+    types:
+      - completed
+  release:
+    types: [published]
+#  push:
+#    branches: [ master ]
+#    tags:
+#      - "v*.*"
+
+
+jobs:
+  no_publish:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    steps:
+      - run: echo 'The triggering workflow failed'
+  publish:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          installation-arguments: "--git https://github.com/python-poetry/poetry.git@6659a22e2a03ad13bae142b66c7c31aea68dd114"
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: "venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}"
+
+      - name: Configure poetry
+        run: |
+          poetry plugin add poetry-dynamic-versioning
+#          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+#          poetry config --list
+          poetry config repositories.testpypi https://test.pypi.org/legacy/
+          poetry config pypi-token.testpypi ${{ secrets.TEST_PYPI_TOKEN }}
+#          poetry config repositories.pypi https://pypi.python.org/pypi
+
+      - name: Publish
+        run: |
+#          poetry publish --build -vvv
+          poetry publish -r testpypi --build -vvv

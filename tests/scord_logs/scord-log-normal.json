@@ -1,0 +1,31 @@
+{
+  "type": "cmd",
+  "cmd": " source ./bin/init.sh",
+  "scord_id": "scord-dd131819-aa3233ab",
+  "exit_code": "0"
+}
+{
+  "type": "cmd",
+  "cmd": " echo \"foooooo
+bbbbarrr-
+asdddd\"",
+  "scord_id": "scord-90d078fa-0bf053c1",
+  "exit_code": "0"
+}
+{
+  "type": "cmd",
+  "cmd": " echo foo > bar",
+  "scord_id": "scord-90d078fa-ed6d8a94",
+  "exit_code": "0"
+}
+{
+  "type": "cmd",
+  "cmd": " ./test/exit_with.sh 77",
+  "scord_id": "scord-90d078fa-fd53c8f0",
+  "exit_code": "77"
+}
+{
+  "scord_id": "scord-90d078fa-fd53c8f0",
+  "tag_str": "testing tag",
+  "type": "tag"
+}

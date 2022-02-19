@@ -1,10 +1,11 @@
 FROM python:3.9-alpine3.13
 
 WORKDIR /app
+ARG SCORD_VERSION=0.2.0
 
 COPY tests/ ./tests
 
-RUN pip install shellcord
+RUN pip install shellcord==$SCORD_VERSION
 
 
 RUN shellcord -h

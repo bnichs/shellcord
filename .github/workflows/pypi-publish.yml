@@ -61,4 +61,4 @@ jobs:
           context: .
           push: false
           build-args: |
-            SCORD_VERSION={{ env.SCORD_VERSION }}
+            SCORD_VERSION=${{ env.SCORD_VERSION }}

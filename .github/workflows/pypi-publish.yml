@@ -52,3 +52,10 @@ jobs:
         run: |
           poetry publish --build -vvv
 #          poetry publish -r testpypi --build -vvv
+
+      - name: Build dockerfile to test install
+        uses: docker/build-push-action@v2
+        with:
+          file: tests/Dockerfile
+          context: .
+          push: false

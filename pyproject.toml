@@ -42,6 +42,7 @@ flake8 = "^4.0.1"
 
 [tool.poetry.scripts]
 shellcord = "shellcord.cli:cli"
+activate_shellcord = "shellcord.activate:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]

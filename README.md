@@ -19,6 +19,7 @@ Then run commands as you need to:
 ```bash
 echo foo 
 ls not_a_fil
+shellcord tag previous "ls command should fail" 
 echo bar
 ```
 
@@ -35,7 +36,7 @@ Upon deactivation, the following runbook is generated:
 >  echo foo
 > ```
 > 
-> ### Command #1
+> ### ls command should fail
 > ```bash
 >  ls not_a_fil
 > ```

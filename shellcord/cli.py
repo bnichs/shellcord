@@ -129,7 +129,8 @@ def tag_previous(ctx, tag_str):
     t = Tag(scord_id=scord_id,
             tag_str=tag_str)
 
-    fpath = ctx.obj.get('scord_log_path')
+    # fpath = ctx.obj.get('scord_log_path')
+    fpath = os.environ['SCORD_LOG_FILE']
     logger.debug("Saving tag value %s in logfile %s", t, fpath)
     t.dump(fname=fpath)
 

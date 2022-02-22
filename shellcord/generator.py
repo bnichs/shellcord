@@ -16,10 +16,10 @@ class RunbookOptions(object):
         self.allow_exit_codes = self.allow_exit_codes or [0]
 
     def include_command(self, command: Command):
+        return True
         if command.exit_code not in self.allow_exit_codes:
             return False
 
-        return True
 
 
 class DefaultRunbookOptions(RunbookOptions):
@@ -67,8 +67,9 @@ class RunbookGenerator(object):
     def make_command(self, command: Command, cmd_num: int):
         txt = ""
 
-        if command.scord_id in self.scord_log.tags:
-            tag = self.scord_log.tags[command.scord_id]
+        scord_id = str(command.scord_id)
+        if scord_id in self.scord_log.tags:
+            tag = self.scord_log.tags[scord_id]
             txt += self.heading(3, tag.tag_str)
         else:
             d = cmd_num

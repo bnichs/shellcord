@@ -14,6 +14,9 @@ from shellcord.config import SCORD_ID_REGEX
 
 logger = logging.getLogger(__name__)
 
+class NoCommands(Exception):
+    pass
+
 
 class ScordEl(object):
     """General representation for a json string in an scord log"""
@@ -184,6 +187,9 @@ class ScordLog(object):
     def from_dict(cls, full_d: dict) -> "ScordLog":
         logger.debug("Building a full ScordLog from dict with %d elements in it", len(full_d))
         els = []
+        if isinstance(full_d, dict):
+            raise NoCommands()
+
         for d in full_d:
             el = ScordEl.from_dict(d)
             els.append(el)

@@ -38,7 +38,7 @@ def cli(ctx, debug, log_file: str):
 
     if log_file and not os.path.exists(log_file):
         raise FileNotFoundError(log_file)
-    log_file = log_file or os.environ.get("SCORD_LOG_FILE", None)
+    # log_file = log_file or os.environ.get("SCORD_LOG_FILE", None)
     logger.debug("Getting commands from scord file %s", log_file)
 
     if not log_file:

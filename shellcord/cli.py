@@ -5,9 +5,9 @@ from pathlib import Path
 from pprint import pprint
 
 import click
-from click import pass_context
+from click import pass_context, Abort
 
-from shellcord.scord import Tag, ScordLog
+from shellcord.scord import Tag, ScordLog, NoCommands
 from shellcord.config import SCORD_LOG_REGEX, FORCE_DEBUG, DEFAULT_LOG_LEVEL
 from shellcord.generator import RunbookGenerator
 
@@ -46,10 +46,15 @@ def cli(ctx, debug, log_file: str):
 
     if not log_file:
         raise FileNotFoundError("No scord log file found. Has shellcord been run yet?")
-    scord_log = ScordLog.parse_file(log_file)
 
-    ctx.obj['scord_log'] = scord_log
-    ctx.obj['scord_log_path'] = log_file
+    try:
+        scord_log = ScordLog.parse_file(log_file)
+        ctx.obj['scord_log'] = scord_log
+        ctx.obj['scord_log_path'] = log_file
+    except NoCommands as e:
+        logger.error("No commands to generate a file from")
+        raise Abort()
+
     # print(scord_log)
 
 

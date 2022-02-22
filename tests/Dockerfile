@@ -16,3 +16,7 @@ ENV LAST_SCORD_ID 12345
 RUN shellcord --log-file ./tests/scord_logs/scord-log-normal.json tag previous "foo bar"
 
 RUN pip index versions shellcord
+
+
+RUN find / -name "shellcord" || echo fail
+RUN find / -name "activate_shellcord" || echo fail
